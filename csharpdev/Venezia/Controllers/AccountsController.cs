@@ -28,9 +28,6 @@ namespace Venezia.Controllers
         [Route("login", Name = "Login")]
         public IActionResult Login(string UserName, string PasswordHash)
         {
-            if (ModelState.IsValid)
-            {
-            }
             return View();
         }
 
@@ -41,11 +38,10 @@ namespace Venezia.Controllers
             return View();
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("register", Name = "Register")]
         public IActionResult Register([Bind("UserName","Email","PasswordHash")] AccountUser account)
         {
-
             return View();
         }
 
