@@ -10,7 +10,7 @@ using Venezia.Models;
 
 namespace Venezia.Data
 {
-    public class VeneziaContext : IdentityDbContext
+    public class VeneziaContext : IdentityDbContext<AccountUser>
     {
         public static readonly ILoggerFactory SqlLogger = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
