@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Venezia.Data;
+using Microsoft.AspNetCore.Identity;
+using Venezia.Models;
 
 namespace Venezia
 {
@@ -23,7 +25,7 @@ namespace Venezia
         {
             this.Configuration = configuration;
         }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
@@ -33,6 +35,42 @@ namespace Venezia
             services.AddDbContext<VeneziaContext>(options => options
                     .UseLoggerFactory(VeneziaContext.SqlLogger)
                     .UseSqlServer(Configuration.GetConnectionString("VeneziaContext")));
+
+            services.AddIdentity<AccountUser, IdentityRole>()
+                    .AddEntityFrameworkStores<VeneziaContext>()
+                    .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+                options.LoginPath = "/Accounts/Login";
+                options.AccessDeniedPath = "/Accounts/Login";
+                options.SlidingExpiration = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,14 +82,20 @@ namespace Venezia
             }
 
             app.UseStaticFiles();
-            
+
             app.UseRouting();
             app.UseSession();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name:"default",
+                    name: "administration",
+                    pattern: "{area:exists}/{controller=Administration}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Venezia.Data;
 
 namespace Venezia.Migrations
 {
     [DbContext(typeof(VeneziaContext))]
-    partial class VeneziaContextModelSnapshot : ModelSnapshot
+    [Migration("20201022110634_add_AccountRole")]
+    partial class add_AccountRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,6 +28,10 @@ namespace Venezia.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -44,6 +50,8 @@ namespace Venezia.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -265,6 +273,13 @@ namespace Venezia.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Fuel");
+                });
+
+            modelBuilder.Entity("Venezia.Models.AccountRole", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
+
+                    b.HasDiscriminator().HasValue("AccountRole");
                 });
 
             modelBuilder.Entity("Venezia.Models.AccountUser", b =>
