@@ -92,6 +92,9 @@ namespace Venezia
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
+                    name: "administration",
+                    pattern: "{area:exists}/{controller=Administration}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
