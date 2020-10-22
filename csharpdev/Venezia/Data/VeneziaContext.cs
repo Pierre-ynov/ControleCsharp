@@ -21,5 +21,7 @@ namespace Venezia.Data
         public DbSet<Venezia.Models.Car> Car { get; set; }
 
         public DbSet<Venezia.Models.Fuel> Fuel { get; set; }
+
+        public DbSet<Venezia.Models.User> User { get; set; }
     }
 }
