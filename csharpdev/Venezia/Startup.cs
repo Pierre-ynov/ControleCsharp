@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Venezia.Data;
 using Microsoft.AspNetCore.Identity;
+using Venezia.Models;
 
 namespace Venezia
 {
@@ -24,7 +25,7 @@ namespace Venezia
         {
             this.Configuration = configuration;
         }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
@@ -34,6 +35,10 @@ namespace Venezia
             services.AddDbContext<VeneziaContext>(options => options
                     .UseLoggerFactory(VeneziaContext.SqlLogger)
                     .UseSqlServer(Configuration.GetConnectionString("VeneziaContext")));
+
+            services.AddIdentity<AccountUser, IdentityRole>()
+                    .AddEntityFrameworkStores<VeneziaContext>()
+                    .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -77,7 +82,7 @@ namespace Venezia
             }
 
             app.UseStaticFiles();
-            
+
             app.UseRouting();
             app.UseSession();
 
@@ -86,7 +91,7 @@ namespace Venezia
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name:"default",
+                    name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
